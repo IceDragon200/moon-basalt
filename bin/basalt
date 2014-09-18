@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+require "basalt"
+begin
+  Basalt.run(File.basename(__FILE__), ARGV.dup)
+rescue Docopt::Exit => ex
+  abort ex.message
+end
