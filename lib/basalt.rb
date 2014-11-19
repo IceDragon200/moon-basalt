@@ -1,6 +1,6 @@
-require "basalt/version"
-require "fileutils"
-require "docopt"
+require 'basalt/version'
+require 'fileutils'
+require 'docopt'
 
 module Basalt
   DOC =
@@ -14,22 +14,22 @@ module Basalt
 
     data = Docopt.docopt(doc, argv: argv, version: VERSION, help: false)
 
-    unless data["<command>"]
+    unless data['<command>']
       data = Docopt.docopt(doc, argv: argv, version: VERSION, help: true)
     end
 
-    if data["new"]
-      name = data["NAME"]
+    if data['new']
+      name = data['NAME']
       FileUtils::Verbose.mkdir_p(name)
       Dir.chdir(name) do
-        require "basalt/project"
-        Basalt::Project.init use_modules: data["--use-modules"], use_git: data["--use-git"]
+        require 'basalt/project'
+        Basalt::Project.init use_modules: data['--use-modules'], use_git: data['--use-git']
       end
-    elsif data["init"]
-      require "basalt/project"
-      Basalt::Project.init use_modules: data["--use-modules"]
-    elsif data["modules"]
-      require "basalt/modules"
+    elsif data['init']
+      require 'basalt/project'
+      Basalt::Project.init use_modules: data['--use-modules']
+    elsif data['modules']
+      require 'basalt/modules'
       Basalt::Modules.run(rootfilename, argv)
     end
   end
