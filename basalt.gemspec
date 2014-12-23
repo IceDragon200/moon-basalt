@@ -18,6 +18,9 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
   s.authors     = ['Corey Powell']
 
+  s.add_dependency 'docopt'
+  s.add_dependency 'colorize'
+
   s.executables = ["basalt"]
   s.require_path = 'lib'
   s.files = []
