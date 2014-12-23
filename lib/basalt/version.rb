@@ -1,9 +1,6 @@
 module Basalt
   module Version
-    MAJOR = 0
-    MINOR = 7
-    TEENY = 3
-    PATCH = nil
+    MAJOR, MINOR, TEENY, PATCH = 0, 9, 0, nil
     STRING = [MAJOR, MINOR, TEENY, PATCH].compact.join('.').freeze
   end
   VERSION = Version::STRING
