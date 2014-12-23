@@ -5,8 +5,9 @@ require 'docopt'
 module Basalt
   DOC =
 %Q(usage: %<binname>s new NAME [--use-modules] [--use-git]
-          %<binname>s init [--use-modules]
-          %<binname>s modules [<argv>...]
+       %<binname>s init [--use-modules]
+       %<binname>s modules [<argv>...]
+       %<binname>s sniff
 )
 
   def self.run(rootfilename, argv)
@@ -31,6 +32,21 @@ module Basalt
     elsif data['modules']
       require 'basalt/modules'
       Basalt::Modules.run(rootfilename, argv)
+    elsif data['sniff']
+      require 'basalt/project_config'
+      require 'basalt/basaltmods'
+      require 'json'
+      if Basalt::BasaltMods.exist?
+        STDERR.puts "#{Dir.getwd} is a BasaltMods Project."
+        context = BasaltMods.load_project_file
+        STDOUT.puts JSON.pretty_generate(context.to_h)
+      elsif Basalt::ProjectConfig.exist?
+        STDERR.puts "#{Dir.getwd} is a Basalt Project."
+        config = Basalt::ProjectConfig.get
+        STDOUT.puts JSON.pretty_generate(config)
+      else
+        abort 'This does not appear to be a Basalt Project.'
+      end
     end
   end
 end
