@@ -2,11 +2,18 @@ require 'yaml'
 
 module Basalt
   module ProjectConfig
+    def self.configname
+      '.basalt/config.yml'
+    end
+
     def self.get
       @config ||= begin
-        configname = '.basalt/config.yml'
         YAML.load_file(configname)
       end
+    end
+
+    def self.exist?
+      File.exist?(configname)
     end
   end
 end
