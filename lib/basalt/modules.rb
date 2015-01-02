@@ -45,7 +45,7 @@ module Basalt
       def init_basaltmods
         contents = ''
         contents << "set install_dir: 'modules'\n\n"
-        installed_modules.each do |mod|
+        installed_modules do |mod|
           contents << "mod '#{mod}'\n" if is_module?(mod)
         end
         filename = 'Basaltmods'
@@ -56,6 +56,7 @@ module Basalt
 
       def install(name, options = {})
         target = project_module_path(name)
+        FileUtils.mkdir_p(project_module_path)
 
         if File.exist?(target)
           STDERR.puts '  SKIPPED'.light_yellow + "\t#{name}"
@@ -242,16 +243,27 @@ module Basalt
         end
       end
 
+      def installed_modules_a
+        path = project_module_path
+        if File.exist?(path)
+          Dir.entries(path) - ignore_dirs
+        else
+          []
+        end
+      end
+
       def installed_modules
-        Dir.entries(project_module_path) - ignore_dirs
+        installed_modules_a.each do |a|
+          yield a
+        end
       end
 
       def uninstall_all(options = {})
-        uninstall_multi(installed_modules, options)
+        uninstall_multi(installed_modules_a, options)
       end
 
       def uninstall_diff(kept_modules, options = {})
-        uninstall_multi(installed_modules - kept_modules, options)
+        uninstall_multi(installed_modules_a - kept_modules, options)
       end
 
       def update(name)
