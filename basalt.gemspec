@@ -7,10 +7,10 @@ $:.unshift lib unless $:.include?(lib)
 require 'basalt/version'
 
 Gem::Specification.new do |s|
-  s.name        = "basalt"
+  s.name        = 'basalt'
   s.summary     = 'Moon Project Manager'
-  s.description = 'Moon Project Manager app'
-  s.homepage    = 'https://github.com/IceDragon200/basalt'
+  s.description = 'The everything helper tool for moon engine projects'
+  s.homepage    = 'https://github.com/IceDragon200/moon-basalt'
   s.email       = 'mistdragon100@gmail.com'
   s.version     = Basalt::Version::STRING
   s.platform    = Gem::Platform::RUBY
@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'docopt',   '~> 0.5'
   s.add_dependency 'colorize', '~> 0.7'
 
-  s.executables = ["basalt"]
+  s.executables = ['basalt']
   s.require_path = 'lib'
   s.files = []
   s.files += Dir.glob('bin/**/*')
