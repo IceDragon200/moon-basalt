@@ -53,7 +53,16 @@ module Basalt #:nodoc:
       end
 
       def entry_point_contents
-        File.read(File.join(@path, entry_point))
+        return '' unless entry_point
+        e = File.join(@path, entry_point)
+        c = "### package(.yml): #{refname}/#{entry_point}\n"
+        if File.exist?(e)
+          c << File.read(e)
+        else
+          abort "#{name} stated that its :require was '#{e}', however the file was not found."
+        end
+        c << "\n" unless c.end_with?("\n")
+        c
       end
 
       def pkgfile
