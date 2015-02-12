@@ -10,15 +10,20 @@ require 'yaml'
 
 module Basalt #:nodoc:
   class Packages
-    DOC = %Q(USAGE:
-  %<binname>s package new NAME
-  %<binname>s package install NAME...
-  %<binname>s package uninstall NAME...
-  %<binname>s package sync NAME...
-  %<binname>s package update NAME...
-  %<binname>s package list
-  %<binname>s package list-available
-  %<binname>s package list-installed)
+    DOC = %Q(Usage:
+  %<binname>s package new [options] NAME
+  %<binname>s package install [options] NAME...
+  %<binname>s package uninstall [options] NAME...
+  %<binname>s package sync [options] NAME...
+  %<binname>s package update [options] NAME...
+  %<binname>s package list [options]
+  %<binname>s package list-available [options]
+  %<binname>s package list-installed [options]
+
+Options:
+  -i, --install-method=METHOD
+  -v, --verbose
+)
 
     def basaltfile
       @basaltfile ||= Basaltfile.new
@@ -29,7 +34,8 @@ module Basalt #:nodoc:
     end
 
     def repoconfig
-      @repoconfig ||= OpenStruct.new(pkgdir: basaltfile.pkgdir)
+      @repoconfig ||= OpenStruct.new(pkgdir: basaltfile.pkgdir,
+                                     install_method: basaltfile.install_method || config[:install_method])
     end
 
     def context
@@ -53,28 +59,34 @@ module Basalt #:nodoc:
       STDERR.puts '  GENERATED'.light_green + "\t#{filename}"
     end
 
-    def install
+    private def each_basaltfile_package(options = {})
       basaltfile.packages.each do |bpkg|
-        context.install(bpkg.name)
+        yield bpkg, bpkg.options.merge(options)
+      end
+    end
+
+    def install(options = {})
+      each_basaltfile_package(options) do |bpkg, opts|
+        context.install(bpkg.name, opts)
       end
       generate_packages_require
     end
 
-    def update
-      basaltfile.packages.each do |bpkg|
-        context.update(bpkg.name)
+    def update(options = {})
+      each_basaltfile_package(options) do |bpkg, opts|
+        context.update(bpkg.name, opts)
       end
       generate_packages_require
     end
 
-    def sync
-      basaltfile.packages.each do |bpkg|
-        context.sync(bpkg.name)
+    def sync(options = {})
+      each_basaltfile_package(options) do |bpkg, opts|
+        context.sync(bpkg.name, opts)
       end
       generate_packages_require
     end
 
-    def multi_exec(list)
+    private def multi_exec(list)
       if list.is_a?(Array)
         list.each do |v|
           begin
@@ -90,29 +102,34 @@ module Basalt #:nodoc:
       end
     end
 
-    def run(rootfilename, argv)
+    def run(rootfilename, argv, rctx)
+      rctx.verbose.puts 'Running package subcommand'
       doc = DOC % ({ binname: rootfilename })
-
       data = Docopt.docopt(doc, argv: argv, version: VERSION, help: true)
 
       names = data['NAME']
 
+      options = {}
+      options[:install_method] = data['--install-method'] || rctx[:install_method]
+      options[:verbose] = data['--verbose'] || rctx[:verbose]
+      rctx.verbose.puts "(#{self.class.name}).options: #{options}"
+
       if data['new']
-        context.new(name)
+        multi_exec(names) { |name| context.new(name, options) }
       elsif data['install']
-        multi_exec(names) { |name| context.install(name) }
+        multi_exec(names) { |name| context.install(name, options) }
       elsif data['uninstall']
-        multi_exec(names) { |name| context.uninstall(name) }
+        multi_exec(names) { |name| context.uninstall(name, options) }
       elsif data['sync']
-        multi_exec(names) { |name| context.sync(name) }
+        multi_exec(names) { |name| context.sync(name, options) }
       elsif data['update']
-        multi_exec(names) { |name| context.update(name) }
+        multi_exec(names) { |name| context.update(name, options) }
       elsif data['list']
-        context.list
+        context.list(options)
       elsif data['list-available']
-        context.list_available
+        context.list_available(options)
       elsif data['list-installed']
-        context.list_installed
+        context.list_installed(options)
       end
     end
   end

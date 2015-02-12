@@ -13,6 +13,10 @@ module Basalt #:nodoc:
       @context.pkgdir
     end
 
+    def install_method
+      @context.install_method
+    end
+
     def packages
       @context.packages
     end

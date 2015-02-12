@@ -28,10 +28,10 @@ module Basalt #:nodoc:
 
       # @param [String] name
       # @return [Package]
-      def find(name)
+      def find(name, options = {})
         pkg = get_package(name)
         fail Repo::PackageMissing.new name unless pkg
-        return pkg
+        pkg
       end
     end
   end

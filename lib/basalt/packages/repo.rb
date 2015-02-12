@@ -43,6 +43,11 @@ module Basalt #:nodoc:
         @readonly = true
       end
 
+      # favour the given options.install_method / config.install_method / default
+      def install_method_pref(options)
+        options[:install_method] || @config.install_method || 'ref'
+      end
+
       # @return [String]
       def pkgdir
         @config.pkgdir
@@ -110,36 +115,40 @@ module Basalt #:nodoc:
       end
 
       # @param [Package] package
-      private def install_package(package)
+      private def install_package(package, options = {})
         FileUtils.mkdir_p(pkgdir)
-        FileUtils.ln_sf(package.path, package_path(package.refname))
+        if install_method_pref(options) == 'copy'
+          FileUtils.cp_r(package.path, package_path(package.refname))
+        else
+          FileUtils.ln_sf(package.path, package_path(package.refname))
+        end
       end
 
       # @param [String] name
-      private def remove_package(name)
+      private def remove_package(name, options = {})
         FileUtils.rm_rf package_path(name)
       end
 
       # @param [Package] package
-      private def update_package(package)
-        remove_package(package.refname)
-        install_package(@srcrepo.find(package.refname))
+      private def update_package(package, options = {})
+        remove_package(package.refname, options)
+        install_package(@srcrepo.find(package.refname), options)
       end
 
       # @param [String] name
-      private def sync_package(name)
+      private def sync_package(name, options = {})
         if exists?(name)
-          update_package get_package(name)
+          update_package get_package(name), options
         else
-          remove_package name
-          install_package name
+          remove_package name, options
+          install_package name, options
         end
       end
 
       # locate a package by name in the system repo
       # @param [String] name
       # @return [Package]
-      def find(name)
+      def find(name, options = {})
         pkg = @srcrepo.get_package(name)
         fail PackageMissing.new name unless pkg
         pkg
@@ -172,104 +181,117 @@ module Basalt #:nodoc:
         when :damaged, :missing
           refname = refname.colorize(:light_yellow)
         end
-        fmt = "\t%s :: %s - %s"
-        puts fmt % [refname.bold, package.name.light_magenta, package.summary]
+        fmt = if options[:verbose]
+          "(%<path>s) %<refname>s :: %<name>s - %<summary>s"
+        else
+          "\t%<refname>s :: %<name>s - %<summary>s"
+        end
+        data = {
+          path: package.path,
+          refname: refname.bold,
+          name: package.name.light_magenta,
+          summary: package.summary
+        }
+        puts fmt % data
       end
 
       # @param [Array<Package>] list
-      def print_package_list(list)
+      def print_package_list(list, options)
         list.sort_by(&:refname).each do |package|
-          print_package package
+          print_package package, options
         end
       end
 
       # Create a new package
       # @param [String] name
-      def new(name)
+      def new(name, options = {})
         ensure_writeable
         ensure_no_package(name)
         pkgdir = package_path(name)
         FileUtils.mkdir_p(pkgdir)
         pkg = Package.new(pkgdir, name)
         pkg.save
-        print_package pkg, state: :new
+        print_package pkg, options.merge(state: :new)
       end
 
       # install package from system repo
       # @param [String] name
-      def install(name)
+      def install(name, options = {})
         ensure_writeable
         if ensure_no_package name, quiet: true
           pkg = @srcrepo.find(name)
-          install_package pkg
-          print_package pkg, state: :install
+          install_package pkg, options
+          print_package pkg, options.merge(state: :install)
         else
           pkg = get_package(name)
-          print_package pkg, state: :exists
+          print_package pkg, options.merge(state: :exists)
         end
       end
 
       # force remove a package from project
       # @param [String] name
-      def remove(name)
+      def remove(name, options = {})
         ensure_writeable
         remove_package name
       end
 
       # uninstall a package from project
       # @param [String] name
-      def uninstall(name)
+      def uninstall(name, options = {})
         ensure_writeable
         if ensure_package name, quiet: true
           pkg = get_package(name)
           remove_package name
-          print_package pkg, state: :remove
+          print_package pkg, options.merge(state: :remove)
         end
       end
 
       # update an existing package to repo one
       # @param [String] name
-      def update(name)
+      def update(name, options = {})
         ensure_writeable
-        ensure_package name
-        pkg = get_package(name)
-        update_package pkg
-        print_package pkg, state: :update
+        if ensure_package name, quiet: true
+          pkg = get_package(name)
+          update_package pkg, options
+          print_package pkg, options.merge(state: :update)
+        else
+          install name, options
+        end
       end
 
       # update an existing repo, or remove and reinstall a damaged or missing
       # package
       # @param [String] name
-      def sync(name)
+      def sync(name, options = {})
         ensure_writeable
-        sync_package(name)
-        print_package get_package(name), state: :sync
+        sync_package(name, options)
+        print_package get_package(name), options.merge(state: :sync)
       end
 
       # prints data from a package in the system repo
       # @param [String] name
-      def show(name)
-        print_package @srcrepo.find(name)
+      def show(name, options = {})
+        print_package @srcrepo.find(name, options), options
       end
 
       # lists all available packages in system repo
       # @param [String] name
-      def list_available
-        print_package_list @srcrepo.installed
+      def list_available(options = {})
+        print_package_list @srcrepo.installed, options
       end
 
       # lists all packages installed or to be installed
       # @param [String] name
-      def list_installed
-        print_package_list installed
+      def list_installed(options = {})
+        print_package_list installed, options
       end
 
       # lists all packages
       # @param [String] name
-      def list
+      def list(options = {})
         @srcrepo.installed.sort_by(&:refname).each do |package|
           state = installed?(package.refname) ? :exists : nil
-          print_package package, state: state
+          print_package package, options.merge(state: state)
         end
       end
     end

@@ -1,5 +1,4 @@
 require 'basalt/packages/dependency_solver'
-require 'basalt/packages/package_header'
 require 'basalt/packages/repo'
 require 'basalt/packages/multi_repo'
 require 'basalt/packages/system_repo'
@@ -20,36 +19,47 @@ module Basalt #:nodoc:
         @repo.srcrepo = @sys_repo
       end
 
-      def new(name)
-        @repo.new(name)
+      def context_options
+        {
+          pkgdir: @repoconfig.pkgdir,
+          install_method: @repoconfig.install_method
+        }
       end
 
-      def install(name)
-        @repo.install(name)
+      def options_patch(opts)
+        context_options.merge(opts)
       end
 
-      def uninstall(name)
-        @repo.uninstall(name)
+      def new(name, options = {})
+        @repo.new(name, options_patch(options))
       end
 
-      def sync(name)
-        @repo.sync(name)
+      def install(name, options = {})
+        @repo.install(name, options_patch(options))
       end
 
-      def update(name)
-        @repo.update(name)
+      def uninstall(name, options = {})
+        @repo.uninstall(name, options_patch(options))
       end
 
-      def list
-        @repo.list
+      def sync(name, options = {})
+        @repo.sync(name, options_patch(options))
       end
 
-      def list_installed
-        @repo.list_installed
+      def update(name, options = {})
+        @repo.update(name, options_patch(options))
       end
 
-      def list_available
-        @repo.list_available
+      def list(options = {})
+        @repo.list(options_patch(options))
+      end
+
+      def list_installed(options = {})
+        @repo.list_installed(options_patch(options))
+      end
+
+      def list_available(options = {})
+        @repo.list_available(options_patch(options))
       end
     end
   end

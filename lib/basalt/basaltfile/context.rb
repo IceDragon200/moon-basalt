@@ -3,11 +3,15 @@ module Basalt #:nodoc:
     class Context
       # @return [String]  target directory to install packages to
       attr_accessor :pkgdir
+      # @return [String]  default installation method for packages
+      # Can either be 'ref' or 'copy'
+      attr_accessor :install_method
       # @return [Array<Basalt::Basaltfile::Package>]
       attr_accessor :packages
 
       def initialize(pkgdir = nil)
         @pkgdir = ENV['BASALT_PKGDIR'] || pkgdir || 'packages'
+        @install_method = nil
         @packages = []
       end
 
