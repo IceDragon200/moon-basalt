@@ -101,7 +101,7 @@ module Basalt #:nodoc:
         pkgfile = File.join(pkgd, Package::FILENAME)
         # is this a package, or just a directory?
         if File.exist?(pkgfile)
-          Package.new(pkgd, name).load
+          Package.load(pkgd, name)
         else
           nil
         end
@@ -118,9 +118,9 @@ module Basalt #:nodoc:
       private def install_package(package, options = {})
         FileUtils.mkdir_p(pkgdir)
         if install_method_pref(options) == 'copy'
-          FileUtils.cp_r(package.path, package_path(package.refname))
+          FileUtils.cp_r(package.path, package_path(package.pkgname))
         else
-          FileUtils.ln_sf(package.path, package_path(package.refname))
+          FileUtils.ln_sf(package.path, package_path(package.pkgname))
         end
       end
 
@@ -131,8 +131,8 @@ module Basalt #:nodoc:
 
       # @param [Package] package
       private def update_package(package, options = {})
-        remove_package(package.refname, options)
-        install_package(@srcrepo.find(package.refname), options)
+        remove_package(package.pkgname, options)
+        install_package(@srcrepo.find(package.pkgname), options)
       end
 
       # @param [String] name
@@ -170,25 +170,25 @@ module Basalt #:nodoc:
       # @param [Hash<Symbol, Object>] options
       def print_package(package, options = {})
         state = options[:state]
-        refname = "%-020s" % package.refname
+        pkgname = "%-020s" % package.pkgname
         case state
         when :exists
-          refname = refname.colorize(:light_blue)
+          pkgname = pkgname.colorize(:light_blue)
         when :install, :new, :update
-          refname = refname.colorize(:light_green)
+          pkgname = pkgname.colorize(:light_green)
         when :remove
-          refname = refname.colorize(:light_red)
+          pkgname = pkgname.colorize(:light_red)
         when :damaged, :missing
-          refname = refname.colorize(:light_yellow)
+          pkgname = pkgname.colorize(:light_yellow)
         end
         fmt = if options[:verbose]
-          "(%<path>s) %<refname>s :: %<name>s - %<summary>s"
+          "(%<path>s) %<pkgname>s :: %<name>s - %<summary>s"
         else
-          "\t%<refname>s :: %<name>s - %<summary>s"
+          "\t%<pkgname>s :: %<name>s - %<summary>s"
         end
         data = {
           path: package.path,
-          refname: refname.bold,
+          pkgname: pkgname.bold,
           name: package.name.light_magenta,
           summary: package.summary
         }
@@ -197,7 +197,7 @@ module Basalt #:nodoc:
 
       # @param [Array<Package>] list
       def print_package_list(list, options)
-        list.sort_by(&:refname).each do |package|
+        list.sort_by(&:pkgname).each do |package|
           print_package package, options
         end
       end
@@ -209,7 +209,7 @@ module Basalt #:nodoc:
         ensure_no_package(name)
         pkgdir = package_path(name)
         FileUtils.mkdir_p(pkgdir)
-        pkg = Package.new(pkgdir, name)
+        pkg = Package.create(pkgdir, name)
         pkg.save
         print_package pkg, options.merge(state: :new)
       end
@@ -289,8 +289,8 @@ module Basalt #:nodoc:
       # lists all packages
       # @param [String] name
       def list(options = {})
-        @srcrepo.installed.sort_by(&:refname).each do |package|
-          state = installed?(package.refname) ? :exists : nil
+        @srcrepo.installed.sort_by(&:pkgname).each do |package|
+          state = installed?(package.pkgname) ? :exists : nil
           print_package package, options.merge(state: state)
         end
       end

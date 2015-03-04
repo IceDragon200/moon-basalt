@@ -9,6 +9,16 @@ basalt new NAME
 ```
 
 ## CHANGELOG
+* 03/03/2015 (0.12.1)
+  * Added conflicts field for pkg.yml
+    This can be used to stop a package from being included with another package,
+    which may cause it to unstable.
+    This is for cases such as having 2 different packages which define the same
+    system. (possibly different versions)
+
+* 02/03/2015 (0.12.0)
+  * Added -f, --basaltfile option
+
 * 12/02/2015 (0.10.1)
   * Added install_method setting for Basaltfile
 

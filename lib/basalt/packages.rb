@@ -21,12 +21,19 @@ module Basalt #:nodoc:
   %<binname>s package list-installed [options]
 
 Options:
+  -f, --basaltfile=BASALTFILE
   -i, --install-method=METHOD
   -v, --verbose
 )
 
+    attr_writer :basaltfile
+
+    def initialize(basaltfile = nil)
+      @basaltfile = basaltfile || Basaltfile.new
+    end
+
     def basaltfile
-      @basaltfile ||= Basaltfile.new
+      @basaltfile
     end
 
     def config
@@ -110,9 +117,14 @@ Options:
       names = data['NAME']
 
       options = {}
+      options[:basaltfile] = data['--basaltfile'] || rctx[:basaltfile]
       options[:install_method] = data['--install-method'] || rctx[:install_method]
       options[:verbose] = data['--verbose'] || rctx[:verbose]
       rctx.verbose.puts "(#{self.class.name}).options: #{options}"
+
+      if bsf = options[:basaltfile]
+        self.basaltfile = Basaltfile.new(bsf)
+      end
 
       if data['new']
         multi_exec(names) { |name| context.new(name, options) }

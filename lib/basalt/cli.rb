@@ -51,6 +51,7 @@ module Basalt #:nodoc:
   %<binname>s package [options] [<argv>...]
 
 Options:
+  -f, --basaltfile=BASALTFILE  basaltfile to load
   -i, --install-method=METHOD  state the default installation-method (ref, copy)
   -v, --verbose                set basalt in verbose mode (very talkative)
 )
@@ -64,11 +65,14 @@ Options:
         data = Docopt.docopt(doc, argv: argv, version: VERSION, help: true)
       end
 
-      packages = Basalt::Packages.new
       rctx = RunContext.new
+      rctx.options[:basaltfile] = data['--basaltfile']
       rctx.options[:install_method] = data['--install-method']
       rctx.options[:verbose] = data['--verbose']
       rctx.verbose.puts "(#{self.name}).options: #{rctx.options}"
+
+      bf = ((bsf = rctx[:basaltfile]) && Basaltfile.new(bsf)) || nil
+      packages = Basalt::Packages.new(bf)
 
       if data['new']
         name = data['NAME']
