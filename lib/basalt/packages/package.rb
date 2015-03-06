@@ -27,7 +27,7 @@ module Basalt #:nodoc:
       #
       # @return [String]
       def name
-        @data.fetch('name')
+        @data['name']
       end
 
       # Who made this package?
