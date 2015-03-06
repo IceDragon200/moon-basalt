@@ -98,7 +98,7 @@ module Basalt #:nodoc:
       # @return [Package]
       private def load_package(name)
         pkgd = package_path(name)
-        pkgfile = File.join(pkgd, Package::FILENAME)
+        pkgfile = File.join(pkgd, Package::PACKAGE_SPEC_FILENAME)
         # is this a package, or just a directory?
         if File.exist?(pkgfile)
           Package.load(pkgd, name)
