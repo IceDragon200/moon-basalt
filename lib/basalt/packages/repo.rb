@@ -1,26 +1,14 @@
+require 'basalt/packages/package_assert'
 require 'basalt/packages/package'
 require 'colorize'
 require 'fileutils'
 require 'ostruct'
 require 'yaml'
 
-module Basalt #:nodoc:
-  class Packages #:nodoc:
+module Basalt
+  class Packages
     class Repo
-      class PackageError < RuntimeError
-      end
-
-      class PackageMissing < PackageError
-        def initialize(name)
-          super "package #{name} does not exist!"
-        end
-      end
-
-      class PackageExists < PackageError
-        def initialize(name)
-          super "package #{name} exists!"
-        end
-      end
+      include PackageAssert
 
       class ReadonlyRepo < RuntimeError
         def initialize
@@ -60,9 +48,12 @@ module Basalt #:nodoc:
       end
 
       # @return [Boolean]
-      def exists?(name)
+      def package_exists?(name)
         Dir.exist?(package_path(name))
       end
+
+      alias :exists? :package_exists?
+
 
       # @return [Boolean]
       def installed?(name)
@@ -72,26 +63,6 @@ module Basalt #:nodoc:
       # Ensures that a repo can be modified, otherwise it raises an error
       private def ensure_writeable
         fail ReadonlyRepo if @readonly
-      end
-
-      # Ensures that a package exists, else it raise an error
-      # @param [String] name
-      private def ensure_package(name, opts = {})
-        unless exists?(name)
-          fail PackageMissing.new(name) unless opts[:quiet]
-          return false
-        end
-        true
-      end
-
-      # Ensures that a package does not exist, else it raise an error
-      # @param [String] name
-      private def ensure_no_package(name, opts = {})
-        if exists?(name)
-          fail PackageExists.new(name) unless opts[:quiet]
-          return false
-        end
-        true
       end
 
       # @param [String] name
@@ -223,8 +194,11 @@ module Basalt #:nodoc:
           install_package pkg, options
           print_package pkg, options.merge(state: :install)
         else
-          pkg = get_package(name)
-          print_package pkg, options.merge(state: :exists)
+          if pkg = get_package(name)
+            print_package pkg, options.merge(state: :exists)
+          else
+            STDERR.puts "Invalid Package: #{name}".light_yellow
+          end
         end
       end
 
@@ -250,7 +224,8 @@ module Basalt #:nodoc:
       # @param [String] name
       def update(name, options = {})
         ensure_writeable
-        if ensure_package name, quiet: true
+        @srcrepo.ensure_package(name)
+        if ensure_package(name, quiet: true) &&
           pkg = get_package(name)
           update_package pkg, options
           print_package pkg, options.merge(state: :update)
