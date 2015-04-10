@@ -1,7 +1,7 @@
 require 'ostruct'
 
-module Basalt #:nodoc:
-  class Packages #:nodoc:
+module Basalt
+  class Packages
     class PackageHeader
       attr_accessor :name
       attr_accessor :config

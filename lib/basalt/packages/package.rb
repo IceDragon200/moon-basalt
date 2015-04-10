@@ -1,9 +1,9 @@
-require 'active_support/core_ext/string'
+require 'active_support/core_ext/string/inflections'
 require 'ostruct'
 require 'yaml'
 
-module Basalt #:nodoc:
-  class Packages #:nodoc:
+module Basalt
+  class Packages
     class Package
       PACKAGE_SPEC_FILENAME = 'pkg.yml'
 

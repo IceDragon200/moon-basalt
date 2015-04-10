@@ -1,6 +1,6 @@
 require 'basalt'
 
-module Basalt #:nodoc:
+module Basalt
   module Cli
     class RunContext
       class NullOut

@@ -1,7 +1,7 @@
 require 'basalt/basaltfile/package'
 require 'basalt/basaltfile/context'
 
-module Basalt #:nodoc:
+module Basalt
   class Basaltfile
     def initialize(fn = nil)
       @filename = fn || ENV['BASALTFILE'] || 'Basaltfile'

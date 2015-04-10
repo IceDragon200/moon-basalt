@@ -4,8 +4,8 @@ require 'basalt/packages/multi_repo'
 require 'basalt/packages/system_repo'
 require 'ostruct'
 
-module Basalt #:nodoc:
-  class Packages #:nodoc:
+module Basalt
+  class Packages
     class Context
       attr_accessor :repoconfig
       attr_reader :repo

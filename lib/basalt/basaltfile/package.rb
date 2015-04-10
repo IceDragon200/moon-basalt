@@ -1,5 +1,5 @@
-module Basalt #:nodoc:
-  class Basaltfile #:nodoc:
+module Basalt
+  class Basaltfile
     #
     class Package
       attr_accessor :name

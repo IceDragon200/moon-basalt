@@ -1,8 +1,8 @@
 require 'ostruct'
 require 'yaml'
 
-module Basalt #:nodoc:
-  module Config #:nodoc:
+module Basalt
+  module Config
     class Base
       attr_reader :filename
 

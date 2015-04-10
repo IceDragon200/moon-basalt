@@ -1,5 +1,5 @@
-module Basalt #:nodoc:
-  class Basaltfile #:nodoc:
+module Basalt
+  class Basaltfile
     class Context
       # @return [String]  target directory to install packages to
       attr_accessor :pkgdir

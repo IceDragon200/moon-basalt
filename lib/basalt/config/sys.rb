@@ -1,7 +1,7 @@
 require 'basalt/config/base'
 
-module Basalt #:nodoc:
-  module Config #:nodoc:
+module Basalt
+  module Config
     class Sys < Base
       def initialize
         super ENV['BASALT_SYS_CONFIG'] || File.join(Dir.home, '.basaltrc')

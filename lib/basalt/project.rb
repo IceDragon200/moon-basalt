@@ -2,7 +2,7 @@ require 'basalt/config'
 require 'fileutils'
 require 'yaml'
 
-module Basalt #:nodoc:
+module Basalt
   module Project
     def self.generate_default_config
       {
