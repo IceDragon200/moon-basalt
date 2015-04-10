@@ -1,7 +1,7 @@
 require 'colorize'
 
-module Basalt #:nodoc:
-  class Packages #:nodoc:
+module Basalt
+  class Packages
     class DependecySolver
       # @return [Array<Package>]
       attr_accessor :packages
@@ -17,9 +17,9 @@ module Basalt #:nodoc:
       private def handle_err(str, options)
         prefix = "DependecySolver: "
         if options[:err_warn]
-          STDERR.puts prefix + msg.light_yellow
+          STDERR.puts prefix + str.light_yellow
         else
-          abort prefix + msg.light_red
+          abort prefix + str.light_red
         end
       end
 
