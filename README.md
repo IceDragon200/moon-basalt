@@ -9,6 +9,13 @@ basalt new NAME
 ```
 
 ## CHANGELOG
+* 11/04/2015 (0.12.3)
+  * Fixed issue where packages that were not stated in the Basaltfile would be
+    included.
+  * Added autoload option for pkg defs in a Basaltfile, this allows you to
+    finetune the output of the packages/load, preventing certain packages
+    from loading automatically.
+    
 * 03/03/2015 (0.12.1)
   * Added conflicts field for pkg.yml
     This can be used to stop a package from being included with another package,

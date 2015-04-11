@@ -1,12 +1,17 @@
+require 'basalt/basaltfile/package_def'
+
 module Basalt
   class Basaltfile
     class Context
-      # @return [String]  target directory to install packages to
+      # @!attribute pkgdir
+      #   @return [String]  target directory to install packages to
       attr_accessor :pkgdir
-      # @return [String]  default installation method for packages
-      # Can either be 'ref' or 'copy'
+      # @!attribute install_method
+      #   @return [String]  default installation method for packages
+      #   Can either be 'ref' or 'copy'
       attr_accessor :install_method
-      # @return [Array<Basalt::Basaltfile::Package>]
+      # @!attribute packages
+      #   @return [Array<Basalt::Basaltfile::PackageDef>]
       attr_accessor :packages
 
       def initialize(pkgdir = nil)
@@ -24,7 +29,10 @@ module Basalt
       def pkg(name, options = {})
         opts = options.dup
         opts[:package] ||= name
-        @packages << Package.new(name, opts)
+        # whether or not the package should be included in the packages/load
+        # by default (this only works if the package also defined a require)
+        opts[:autoload] = true unless opts.key?(:autoload)
+        @packages << PackageDef.new(name, opts)
       end
 
       def eval_data(data, filename = self.class.name)
