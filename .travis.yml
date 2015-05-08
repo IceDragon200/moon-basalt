@@ -1,0 +1,14 @@
+language: ruby
+addons:
+  code_climate:
+    repo_token: 2a78d0fe11a0a06420b4447f40f44cbb666c51330077c9b59eca309d9ccd4a01
+rvm:
+- 2.1
+- 2.2
+- ruby-head
+before_install:
+- gem install bundle
+install:
+- bundle install
+script:
+- bundle exec rspec
