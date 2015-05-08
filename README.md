@@ -1,5 +1,10 @@
 Basalt
 ======
+[![Build Status](https://travis-ci.org/polyfox/moon-basalt.svg?branch=master)](https://travis-ci.org/polyfox/moon-basalt)
+[![Test Coverage](https://codeclimate.com/github/polyfox/moon-basalt/badges/coverage.svg)](https://codeclimate.com/github/polyfox/moon-basalt)
+[![Inline docs](http://inch-ci.org/github/polyfox/moon-basalt.svg?branch=master)](http://inch-ci.org/github/polyfox/moon-basalt)
+[![Code Climate](https://codeclimate.com/github/polyfox/moon-basalt/badges/gpa.svg)](https://codeclimate.com/github/polyfox/moon-basalt)
+
 Project Manager for Moon
 
 ## USAGE
