@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.name        = 'basalt'
   s.summary     = 'Moon Package Manager.'
   s.description = 'A simple package manager, meant for use with moon.'
-  s.homepage    = 'https://github.com/IceDragon200/moon-basalt'
+  s.homepage    = 'https://github.com/polyfox/moon-basalt'
   s.email       = 'mistdragon100@gmail.com'
   s.version     = Basalt::Version::STRING
   s.platform    = Gem::Platform::RUBY
@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'colorize',      '~> 0.7'
   s.add_dependency 'activesupport', '~> 4.2'
   s.add_development_dependency 'rspec', '~> 3.2'
+  s.add_development_dependency 'codeclimate-test-reporter', '~> 0'
   s.add_development_dependency 'simplecov', '~> 0'
 
   s.executables = ['basalt']

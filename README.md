@@ -14,6 +14,9 @@ basalt new NAME
 ```
 
 ## CHANGELOG
+* 09/05/2015 (0.13.0)
+  * Project has been removed, basalt is now purely a package manager.
+  
 * 11/04/2015 (0.12.3)
   * Fixed issue where packages that were not stated in the Basaltfile would be
     included.

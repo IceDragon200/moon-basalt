@@ -43,8 +43,6 @@ module Basalt
     end
 
     DOC = %Q(Usage:
-  %<binname>s new NAME [options]
-  %<binname>s init [options]
   %<binname>s install [options]
   %<binname>s update [options]
   %<binname>s sync [options]
@@ -74,15 +72,7 @@ Options:
       bf = ((bsf = rctx[:basaltfile]) && Basaltfile.new(bsf)) || nil
       packages = Basalt::Packages.new(bf)
 
-      if data['new']
-        name = data['NAME']
-        FileUtils::Verbose.mkdir_p(name)
-        Dir.chdir(name) do
-          Basalt::Project.init
-        end
-      elsif data['init']
-        Basalt::Project.init
-      elsif data['install']
+      if data['install']
         packages.install(rctx)
       elsif data['update']
         packages.update(rctx)

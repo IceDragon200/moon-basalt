@@ -1,5 +1,4 @@
 require 'basalt/packages'
-require 'basalt/project'
 require 'basalt/version'
 require 'fileutils'
 require 'docopt'
